@@ -36,7 +36,7 @@ public class DemoService {
     @EventListener
     void onEvent(DumbEvent event) {
         try {
-            // this fails with a "connection is closed" error; the error does not happen if we do @TransactionalEventListener
+            // this fails with a "connection is closed" error
             transactionManager.executeWrite(status -> {
                 jdbi.useExtension(FooDao.class, dao -> dao.saveFoo("boop"));
                 return true;
