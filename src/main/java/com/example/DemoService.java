@@ -2,10 +2,7 @@ package com.example;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.runtime.event.annotation.EventListener;
-import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.transaction.TransactionOperations;
-import io.micronaut.transaction.annotation.Transactional;
-import io.micronaut.transaction.annotation.TransactionalEventListener;
 import jakarta.inject.Singleton;
 import org.jdbi.v3.core.Jdbi;
 
