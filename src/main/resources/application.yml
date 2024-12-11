@@ -1,0 +1,12 @@
+micronaut:
+  application:
+    name: demo
+
+datasources:
+  default:
+    dialect: postgres
+
+flyway:
+  datasources:
+    default:
+      locations: classpath:db/default
