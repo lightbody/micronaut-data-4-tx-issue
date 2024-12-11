@@ -22,3 +22,7 @@ This results in a "connection is closed" because internally Hikari isn't expecti
 
 I'd like to understand a) why this is happening and b) anything we can do that doesn't involve examining or rewriting 
 the existing 300+ usages one of `@Async`, `@EventListener`, and/or our own custom `registerSynchronization` usage.
+
+One last note: the issue can be produced regardless of how you spin off the downstream async work. This code uses
+`publishEventAsync`, but you can swap it out with direct method call annotated with `@Async` or event submitting work
+to `@Named(TaskExecutors.SCHEDULED) ExecutorService executorService`. The result is the same: "connection is closed".
