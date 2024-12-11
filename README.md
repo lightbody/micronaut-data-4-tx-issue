@@ -13,7 +13,9 @@ not, it will initiate a new transaction using `TransactionOperations`.
 
 Furthermore, we also have a lot of code that kicks off async event listeners and/or uses `@Async` paired with code that
 is configured using the tx synchronizers to execute after commit. We did _not_ utilize `TransactionalEventListener`,
-primarily because it didn't exist or work with Spring transactions at the time.
+primarily because it didn't exist or work with Spring transactions at the time, and also because it only seems to work
+for registering event listeners that execute synchronously on the same calling thread. Our needs are for asynchronous
+work to trigger.
 
 Now that we're migrating, we're finding that code like the flow in this example produce a "connection is closed" error.
 It seems that the new `PropagatedContext` system (paired with `ExecutorServiceInstrumenter`) is causing the Hikari 
@@ -23,6 +25,9 @@ This results in a "connection is closed" because internally Hikari isn't expecti
 I'd like to understand a) why this is happening and b) anything we can do that doesn't involve examining or rewriting 
 the existing 300+ usages one of `@Async`, `@EventListener`, and/or our own custom `registerSynchronization` usage.
 
-One last note: the issue can be produced regardless of how you spin off the downstream async work. This code uses
-`publishEventAsync`, but you can swap it out with direct method call annotated with `@Async` or event submitting work
-to `@Named(TaskExecutors.SCHEDULED) ExecutorService executorService`. The result is the same: "connection is closed".
+One last note: the issue can be produced regardless of how you spin off the downstream async work. This code uses a 
+direct async submission via `ExecutorService`, but you can see the same behavior with: 
+1) `publishEventAsync` + `@EventListener`
+2) a director method call that is annotated with `@Async`
+
+The result is the same: "connection is closed".
